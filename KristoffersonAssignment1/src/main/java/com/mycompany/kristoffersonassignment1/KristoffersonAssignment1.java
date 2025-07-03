@@ -9,7 +9,12 @@ import java.util.Scanner;
  * Releases:
  *      1) July 2, 2025 - Formatted table for pet database and ability to 
  *                        add pets into database.
- *      2)
+ *      2) July 2, 2025 - Added ability to search for pet by name and age. Will
+ *                        return all matches to the queries that are in the 
+ *                        database array. Also went through and formatted print
+ *                        statements so that they're easier to read. Changed the
+ *                        pet count at the end of the footer. Didn't realize it
+ *                        was a sentence.
  *      3)
  * 
  * Sources:
@@ -75,9 +80,9 @@ public class KristoffersonAssignment1 {
         Prints out the table header.
     */
     public void printTableHeader() {
-        System.out.println("+----------------------+");
-        System.out.println("| ID  | NAME     | AGE |");
-        System.out.println("+----------------------+");
+        System.out.println("+------------------------+");
+        System.out.println("| ID  | NAME       | AGE |");
+        System.out.println("+------------------------+");
         
     }
     
@@ -88,24 +93,26 @@ public class KristoffersonAssignment1 {
     public void printTableRows() {
         for (int i = 0; i < pets.length; i++) {
             if (pets[i] != null) {
-                System.out.printf("| %-3d %s\n", i, pets[i].toString());
+                System.out.printf("| %-3d | %-10s | %-3d |\n", i, 
+                        pets[i].getName(), pets[i].getAge());
             }
         }
     }
+    
     
     /*
         Prints out the formatting for the table as well as a count of
         pets in the database after formatting.
     */
     public void printTableFooter() {
-        System.out.print("+----------------------+");
+        System.out.print("+------------------------+");
         int petCount = 0;
         for (Pet pet : pets) {
             if (pet != null) {
                 petCount++;
             }
         }
-        System.out.println(" " + petCount + "\n");
+        System.out.println("\n" + petCount + " rows in set.");
         
     }
     
@@ -122,7 +129,7 @@ public class KristoffersonAssignment1 {
         Menu for main loop of program
     */
     public void printMenu() {
-        System.out.println("What would you like to do?");
+        System.out.println("\nWhat would you like to do?");
         System.out.println("1) View all pets");
         System.out.println("2) Add more pets");
         System.out.println("3) Update an existing pet");
@@ -130,7 +137,7 @@ public class KristoffersonAssignment1 {
         System.out.println("5) Search pets by name");
         System.out.println("6) Search pets by age");
         System.out.println("7) Exit program");
-        System.out.print("Your choice: ");
+        System.out.print("\nYour choice: ");
         
     }
     
@@ -147,7 +154,70 @@ public class KristoffersonAssignment1 {
         }
         System.out.println("Database is full");
     }
+    
+    /*
+        Searches pet by name. If found, loops through all pets in the pets array
+        to find all matches. Used IgnoreCase for any typing errors that may have
+        occured.
+    */
+    public void searchPetByName(String name) {
+        boolean found = false;
+        
+        for (int i = 0; i < pets.length; i++) {
+            if (pets[i] != null && pets[i].getName().equalsIgnoreCase(name)) {
+                found = true;
+                break;
+            }
+        }
+        
+        if (found) {
+            printTableHeader();
+            
+            for (int i = 0; i < pets.length; i++) {
+                if (pets[i] != null && pets[i].getName().equalsIgnoreCase(name)) {
+                    System.out.printf("| %-3d | %-10s | %-3d |\n", i,
+                            pets[i].getName(), pets[i].getAge());
+                }
+            }
+            printTableFooter();
+        } 
+        else {
+            System.out.println("\nNo pets found with name: " + name + "\n");
+        }
+    }
 
+    /*
+        Searching pet by age. If found, loops through pets array to find all
+        instances of pets with that age.
+    */
+    public void searchPetByAge(int age) {
+        boolean found = false;
+        
+        for (int i = 0; i < pets.length; i++) {
+            if (pets[i] != null && pets[i].getAge() == age) {
+                found = true;
+                break;
+            }
+        }
+        
+        if (found) {
+            printTableHeader();
+            
+            for (int i = 0; i < pets.length; i++) {
+                if (pets[i] != null && pets[i].getAge() == age) {
+                    System.out.printf("| %-3d | %-10s | %-3d |\n", 
+                        i, pets[i].getName(), pets[i].getAge());
+                }
+            }
+            printTableFooter();
+        }
+        else {
+            System.out.println("No pets found with that age: " + age);
+        }
+        
+    }
+    
+    
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         KristoffersonAssignment1 database = new KristoffersonAssignment1();
@@ -167,9 +237,9 @@ public class KristoffersonAssignment1 {
                     database.printAllPets();
                     break;
                 case 2:
-                    System.out.print("Enter pet name: ");
+                    System.out.print("\nEnter pet name: ");
                     String name = scanner.next();
-                    System.out.print("Enter pet's age: ");
+                    System.out.print("Enter " + name + "'s age: ");
                     int age = scanner.nextInt();
                     database.addPet(name, age);
                     break;
@@ -178,8 +248,14 @@ public class KristoffersonAssignment1 {
                 case 4:
                     break;
                 case 5:
+                    System.out.print("\nEnter a name to search: ");
+                    String searchName = scanner.next();
+                    database.searchPetByName(searchName);
                     break;
                 case 6:
+                    System.out.print("\nEnter an age to search: ");
+                    int searchAge = scanner.nextInt();
+                    database.searchPetByAge(searchAge);
                     break;
                 case 7: 
                     System.out.println("Goodbye!");
