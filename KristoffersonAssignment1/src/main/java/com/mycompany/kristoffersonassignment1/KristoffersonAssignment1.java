@@ -15,10 +15,16 @@ import java.util.Scanner;
  *                        statements so that they're easier to read. Changed the
  *                        pet count at the end of the footer. Didn't realize it
  *                        was a sentence.
- *      3)
+ *      3) July 3, 2025 - Added functionality to update or remove a pet's
+ *                        information in the database. Added in scanner.nextLine
+ *                        because it can handle 2 worded names. Also needed to
+ *                        add in other blank lines so that it will work
+ *                        properly.
  * 
  * Sources:
  *  https://www.w3schools.com/java/ref_output_printf.asp
+ * 
+ *  https://www.reddit.com/r/learnprogramming/comments/uaelit/nextline_in_java/
  */
 
 class Pet {
@@ -217,6 +223,43 @@ public class KristoffersonAssignment1 {
         
     }
     
+    /*
+        Updates a pet's name and age based on their petID.
+    */
+    public void updatePet(int petID, String updateName, int updateAge) {
+        if (petID < 0 || petID >= pets.length || pets[petID] == null) {
+            System.out.println("Invalid petID: " + petID);
+            return;
+        }
+        
+        // Capture old name and age for print statement
+        String tempName = pets[petID].getName();
+        int tempAge = pets[petID].getAge();
+        
+        pets[petID].setName(updateName);
+        pets[petID].setAge(updateAge);
+        // Confirmation of name change.
+        System.out.println(tempName + ", aged " + tempAge + " has been changed to, " 
+                + updateName + ", aged " + updateAge);
+        
+    }
+    
+    /*
+        Removes a pet from the database by using their array index (petID).
+    */
+    public void removePet(int deleteID) {
+        if (deleteID < 0 || deleteID >= pets.length || pets[deleteID] == null) {
+            System.out.println("Invalid petID: " + deleteID);
+            return;
+        }
+        
+        String removePet = pets[deleteID].getName();
+        pets[deleteID] = null;
+        
+        System.out.println(removePet + " has been removed from database.");
+        
+    }
+    
     
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -238,18 +281,33 @@ public class KristoffersonAssignment1 {
                     break;
                 case 2:
                     System.out.print("\nEnter pet name: ");
-                    String name = scanner.next();
+                    scanner.nextLine();
+                    String name = scanner.nextLine();
                     System.out.print("Enter " + name + "'s age: ");
                     int age = scanner.nextInt();
                     database.addPet(name, age);
                     break;
                 case 3:
+                    database.printAllPets();
+                    System.out.println("\nEnter the pet ID to update: ");
+                    int petID = scanner.nextInt();
+                    System.out.print("\nEnter new name: ");
+                    scanner.nextLine();
+                    String updateName = scanner.nextLine();
+                    System.out.print("Enter new age: ");
+                    int updateAge = scanner.nextInt();
+                    database.updatePet(petID, updateName, updateAge);
                     break;
                 case 4:
+                    database.printAllPets();
+                    System.out.println("\nEnter ID to remove: ");
+                    int deleteID = scanner.nextInt();
+                    database.removePet(deleteID);
                     break;
                 case 5:
+                    scanner.nextLine();
                     System.out.print("\nEnter a name to search: ");
-                    String searchName = scanner.next();
+                    String searchName = scanner.nextLine();
                     database.searchPetByName(searchName);
                     break;
                 case 6:
