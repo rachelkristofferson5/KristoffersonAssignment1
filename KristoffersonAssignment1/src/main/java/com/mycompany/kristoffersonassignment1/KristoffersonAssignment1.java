@@ -1,6 +1,9 @@
 
 package com.mycompany.kristoffersonassignment1;
 import java.util.Scanner;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 /**
  *
  * @author Rachel Kristofferson
@@ -20,11 +23,18 @@ import java.util.Scanner;
  *                        because it can handle 2 worded names. Also needed to
  *                        add in other blank lines so that it will work
  *                        properly.
+ *      4) July 9, 2025 - Changed the addPet() method to write new pet's to a
+ *                        file, "petDatabase.txt" and changed the limit of the
+ *                        array to 5. Also changed user input to write both pet's
+ *                        name and age on one line in case 2 in main().
  * 
  * Sources:
  *  https://www.w3schools.com/java/ref_output_printf.asp
  * 
  *  https://www.reddit.com/r/learnprogramming/comments/uaelit/nextline_in_java/
+ * 
+ * https://www.youtube.com/watch?v=ScUJx4aWRi0&t=376s
+ * 
  */
 
 class Pet {
@@ -80,7 +90,7 @@ class Pet {
 public class KristoffersonAssignment1 {
     
     // Array representing pet database
-    private static Pet[] pets = new Pet[100];
+    private static Pet[] pets = new Pet[5];
     
     /*
         Prints out the table header.
@@ -148,12 +158,22 @@ public class KristoffersonAssignment1 {
     }
     
     /*
-        Add pet to array database. Database limit is 100
+        Add pet to array database. Database limit is 5
+        Updated to write new pets to file, "petDatabase.txt"
     */
     public void addPet(String name, int age) {
         for (int i = 0; i < pets.length; i++) {
             if (pets[i] == null) {
                 pets[i] = new Pet(name, age);
+                
+                try {
+                    BufferedWriter writer = new BufferedWriter(new FileWriter("petDatabase.txt", true));
+                    writer.write(name + "," + age + "\n");
+                    writer.close();
+                    System.out.println("Added: " + name + ", " + age);
+                } catch(IOException e){
+                    System.out.println("Error: Unable to write to file: " + e.getMessage());
+                }
                 System.out.println("Added pet with ID: " + i);
                 return;
             }
@@ -280,10 +300,9 @@ public class KristoffersonAssignment1 {
                     database.printAllPets();
                     break;
                 case 2:
-                    System.out.print("\nEnter pet name: ");
+                    System.out.print("Enter pet (name, age): ");
                     scanner.nextLine();
-                    String name = scanner.nextLine();
-                    System.out.print("Enter " + name + "'s age: ");
+                    String name = scanner.next();
                     int age = scanner.nextInt();
                     database.addPet(name, age);
                     break;
