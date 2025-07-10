@@ -4,6 +4,8 @@ import java.util.Scanner;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
 /**
  *
  * @author Rachel Kristofferson
@@ -26,7 +28,9 @@ import java.io.IOException;
  *      4) July 9, 2025 - Changed the addPet() method to write new pet's to a
  *                        file, "petDatabase.txt" and changed the limit of the
  *                        array to 5. Also changed user input to write both pet's
- *                        name and age on one line in case 2 in main().
+ *                        name and age on one line in case 2 in main(). Added 
+ *                        loadFromFile() method that loads information from a 
+ *                        file and populates the database array with that info.
  * 
  * Sources:
  *  https://www.w3schools.com/java/ref_output_printf.asp
@@ -142,6 +146,37 @@ public class KristoffersonAssignment1 {
     }
     
     /*
+        Method to load data from file, "petDatabase.txt" that will parse through
+        the lines of the file and clean up the data and assign it to the correct
+        variable to make a new Pet instance.
+    */
+    public void loadFromFile() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("petDatabase.txt"));
+            String line;
+            int index = 0;
+            
+            for (int i = 0; i < pets.length; i++) {
+                pets[i] = null;
+            }
+            
+            while ((line = reader.readLine()) != null && index < pets.length) {
+                String[] parts = line.split(",");
+                // Cleans up data from file. Assigns data to variable.
+                if (parts.length == 2) {
+                    String name = parts[0].trim();
+                    int age = Integer.parseInt(parts[1].trim());
+                    pets[index] = new Pet(name, age);
+                    index++;
+                }
+            }
+        } catch(IOException e){
+            System.out.println("File not found, data base is empty. Add pet"
+                    + "to create database.");
+        }
+    }
+    
+    /*
         Menu for main loop of program
     */
     public void printMenu() {
@@ -167,18 +202,20 @@ public class KristoffersonAssignment1 {
                 pets[i] = new Pet(name, age);
                 
                 try {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter("petDatabase.txt", true));
+                    BufferedWriter writer = new BufferedWriter(new 
+                            FileWriter("petDatabase.txt", true));
                     writer.write(name + "," + age + "\n");
                     writer.close();
                     System.out.println("Added: " + name + ", " + age);
                 } catch(IOException e){
-                    System.out.println("Error: Unable to write to file: " + e.getMessage());
+                    System.out.println("Error: Unable to write to file: " 
+                            + e.getMessage());
                 }
                 System.out.println("Added pet with ID: " + i);
                 return;
             }
         }
-        System.out.println("Database is full");
+        System.out.println("\nDatabase is full. Remove a pet to add more.");
     }
     
     /*
@@ -285,8 +322,9 @@ public class KristoffersonAssignment1 {
         Scanner scanner = new Scanner(System.in);
         KristoffersonAssignment1 database = new KristoffersonAssignment1();
         
-        
-        database.addPet("Tiny", 7);
+        // Populate the array with info from file. File is created in addPet()
+        // if it doesn't exist.
+        database.loadFromFile();
         
         // Main loop
         boolean running = true;
