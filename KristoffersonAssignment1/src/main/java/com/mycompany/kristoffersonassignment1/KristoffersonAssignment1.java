@@ -1,5 +1,6 @@
 
 package com.mycompany.kristoffersonassignment1;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -388,8 +389,14 @@ public class KristoffersonAssignment1 {
                 case 4:
                     database.printAllPets();
                     System.out.println("\nEnter ID to remove: ");
-                    int deleteID = scanner.nextInt();
-                    database.removePet(deleteID);
+                    try {
+                        int deleteID = scanner.nextInt();
+                        database.removePet(deleteID);
+                    }
+                    catch(InputMismatchException e){
+                        System.out.println("Invalid value, expected a numeric integer value. Example: 1");
+                        scanner.nextLine(); // Cleaning the scanner's buffer
+                    }
                     break;
                 case 5:
                     scanner.nextLine();
