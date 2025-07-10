@@ -31,6 +31,9 @@ import java.io.FileReader;
  *                        name and age on one line in case 2 in main(). Added 
  *                        loadFromFile() method that loads information from a 
  *                        file and populates the database array with that info.
+ *                        Changed the removePet() method to write to a file. Needed
+ *                        to close the writer to save the changes made, otherwise
+ *                        it erased the file.
  * 
  * Sources:
  *  https://www.w3schools.com/java/ref_output_printf.asp
@@ -38,6 +41,8 @@ import java.io.FileReader;
  *  https://www.reddit.com/r/learnprogramming/comments/uaelit/nextline_in_java/
  * 
  * https://www.youtube.com/watch?v=ScUJx4aWRi0&t=376s
+ * 
+ * https://www.geeksforgeeks.org/java/java-io-writer-class-java/
  * 
  */
 
@@ -170,6 +175,7 @@ public class KristoffersonAssignment1 {
                     index++;
                 }
             }
+            reader.close();
         } catch(IOException e){
             System.out.println("File not found, data base is empty. Add pet"
                     + "to create database.");
@@ -207,6 +213,7 @@ public class KristoffersonAssignment1 {
                     writer.write(name + "," + age + "\n");
                     writer.close();
                     System.out.println("Added: " + name + ", " + age);
+                    writer.close();
                 } catch(IOException e){
                     System.out.println("Error: Unable to write to file: " 
                             + e.getMessage());
@@ -302,7 +309,10 @@ public class KristoffersonAssignment1 {
     }
     
     /*
-        Removes a pet from the database by using their array index (petID).
+        Removes a pet from the database by using their array index (petID). 
+        Added file read/write capabilities when removing a pet. Method rewrites
+        the file when setting an element in the array to null, skipping over
+        that value.
     */
     public void removePet(int deleteID) {
         if (deleteID < 0 || deleteID >= pets.length || pets[deleteID] == null) {
@@ -310,8 +320,28 @@ public class KristoffersonAssignment1 {
             return;
         }
         
+        // Shift all objects in array that are to the right of the removed index left.
         String removePet = pets[deleteID].getName();
-        pets[deleteID] = null;
+        
+        for (int i = deleteID; i < pets.length - 1; i++) {
+            pets[i] = pets[i + 1];
+        }
+        
+        pets[pets.length - 1] = null;
+        
+        // Rewrite the file with remaining pets while skipping over null.
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("petDatabase.txt"));
+            for (Pet pet : pets) {
+                if (pet != null) {
+                    writer.write(pet.getName() + "," + pet.getAge() + "\n");
+                }
+            }
+            // Need this line otherwise file will be erased!
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Unable to write to file: " + e.getMessage());
+        }
         
         System.out.println(removePet + " has been removed from database.");
         
